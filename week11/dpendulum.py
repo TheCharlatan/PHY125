@@ -16,8 +16,6 @@ class Pendulum:
   dt = 0.0
   e = 0.0
   q = np.array([0,0])
-  u = 0
-  g = 9.81
 
   def __init__(self, b=1, l=1, omega=1.0):
     self.X = 0
@@ -27,7 +25,7 @@ class Pendulum:
     self.b = b
     self.l = l
     self.omega = omega
-    self.dt = self.omega/50.0
+    self.dt = self.omega/100.0
     self.e = (self.b/self.l) * omega**2
 
   def step(self):
@@ -45,29 +43,27 @@ class Pendulum:
   def runge2(self):
     """Solves a differential equation with Runge-Kutta 2
     F: function to be solved for
-    ini: array
-        holds the starting requirements and is updated in every iteration
-    t: linearly spaced array
-        holds the time for the different points to be draw"""
-
-    #delta_t = t[-1] - t[-2]
-    #values = []
-    #for time in t:
+    q:  array
+        holds the starting requirements of the dynamic angle q and is updated in every iteration
+    time: float
+          Time for the different points to be drawn"""
     self.q = self.q + 1/2 * self.dt * (self.F(self.q,self.time) + self.F(self.q + self.dt * self.F(self.q,self.time), self.time+self.dt))
 
-
   def F(self,q,t):
-    #"""The differential function in a four dimensional vector, first two dimensions for space, latter for velocity into given spatial dimension"""
-    #return np.array([X[2],X[3],2*X[3],-2*X[2]+np.cos(omega * t)])
-    return np.array([q[1], -np.sin(self.q[0]) - self.e * np.sin(self.q[0] - self.omega*t)])
+    """Differential equation of the movement, transfers one angular velocity value to the next
+    q:  array
+        holds the starting requirements of the dynamic angle q and is updated in every iteration
+    time: float
+          Time for the different points to be drawn"""
+    return np.array([q[1], -np.sin(self.q[0]) - self.e * np.sin(self.q[0] - self.omega*self.time)])
+
 
 #Angular frequency of the driving rod
-omega = 2
+omega = 2.5
 #Length of the driving rod between its points of fixture and hinge with the free swinging point
 b = 1
 #Length of the flexible dysonant rod
 l = 1
-#Starting coordinates of the harmonic rod
 
 pendel = Pendulum(b, l, omega)
 
@@ -87,7 +83,7 @@ def animate(i):
   Lpoint.set_data([pendel.x,pendel.y])
   Lline.set_data([pendel.X,pendel.x],[pendel.Y,pendel.y])
 
-ani = animation.FuncAnimation(fig, animate, interval=25)# init_func=init)
+ani = animation.FuncAnimation(fig, animate, interval=25)
 
 pl.show()
 
